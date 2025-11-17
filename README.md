@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://pypi.org/project/apk-patchx/">
-    <img src="https://img.shields.io/pypi/v/apk-patchx?color=1E90FF&label=PyPI&style=for-the-badge">
+    <img src="https://img.shields.io/pypi/v/apk-patchx?color=1E90FF&label=PyPI%20Latest&style=for-the-badge">
   </a>
    
   <img src="https://img.shields.io/badge/Tested%20on-Linux%20%7C%20macOS%20%7C%20Termux-0d1117?style=for-the-badge&logo=android&logoColor=39ff14">
