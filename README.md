@@ -2,7 +2,7 @@
 
 <h2 align="center">⚡ apk-patchx</h2>
 
-<p align="center">
+<p>
   <span style="font-size:22px; line-height:1.5;">
     A modern Python-powered toolkit for effortless <b>reverse engineering</b>,  
     <b>patching</b>, <b>rebuilding</b>, and <b>signing</b> Android APKs.<br>
