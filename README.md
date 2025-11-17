@@ -9,8 +9,7 @@
    
   <img src="https://img.shields.io/badge/Tested%20on-Linux%20%7C%20macOS%20%7C%20Termux-0d1117?style=for-the-badge&logo=android&logoColor=39ff14">
   
-  <img src="https://img.shields.io/badge/License-MIT-39ff14?style=for-the-badge">
-</p>
+  </p>
 <br>
 
 ---
