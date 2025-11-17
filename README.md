@@ -2,15 +2,6 @@
 
 <h2 align="center">⚡ apk-patchx</h2>
 
-<p>
-  <span style="font-size:22px; line-height:1.5;">
-    A modern Python-powered toolkit for effortless <b>reverse engineering</b>,  
-    <b>patching</b>, <b>rebuilding</b>, and <b>signing</b> Android APKs.<br>
-    Supports Frida gadget injection, ADB pulling, DEX manipulation,  
-    apktool integration, and streamlined CI/CD workflows.
-  </span>
-</p>
-
 <p align="center">
   <a href="https://pypi.org/project/apk-patchx/">
     <img src="https://img.shields.io/pypi/v/apk-patchx?color=1E90FF&label=PyPI&style=for-the-badge">
@@ -38,7 +29,7 @@ Whether you’re a security researcher, reverse engineer, or power user — it g
 ---
 
 <p align="center">
-  <img src="https://placehold.co/1100x200/000000/39ff14?font=JetBrains%20Mono&text=%24%20apk-patchx%20%20patch%20%20--arch%20arm64%20%20%20--frida-version%20%2017.2.8" alt="apk-patchx Terminal Example">
+  <img src="https://placehold.co/1100x150/000000/39ff14?font=JetBrains%20Mono&text=%24%20apk-patchx%20%20patch%20%20--arch%20arm64%20%20%20--frida-version%20%2017.2.8" alt="apk-patchx Terminal Example">
 </p>
 
 ## Installation
