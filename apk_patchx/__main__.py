@@ -1,5 +1,3 @@
-"""Command-line interface for APKPatcher."""
-
 import sys
 from pathlib import Path
 from typing import Optional
@@ -9,12 +7,12 @@ import colorama
 from colorama import Fore, Style
 
 from . import __version__
-from .exceptions import APKPatcherError
+from .exceptions import APKPatchxError
 from .services.adb import ADBService
 from .services.apktool import ApktoolService
 from .services.frida import FridaService
 from .services.signing import SigningService
-from .utils.core import setup_logging, get_apkpatcher_home
+from .utils.core import setup_logging, get_apkpatchx_home
 
 colorama.init(autoreset=True)
 
@@ -44,9 +42,9 @@ def print_warning(message: str) -> None:
 @click.option("--version", is_flag=True, help="Show version and exit")
 @click.pass_context
 def cli(ctx: click.Context, verbose: bool, version: bool) -> None:
-    """APKPatcher - Android APK manipulation toolkit."""
+    """APKPatchx - Android APK manipulation toolkit."""
     if version:
-        click.echo(f"APKPatcher {__version__}")
+        click.echo(f"APKPatchx {__version__}")
         sys.exit(0)
 
     if ctx.invoked_subcommand is None:
@@ -57,12 +55,12 @@ def cli(ctx: click.Context, verbose: bool, version: bool) -> None:
     ctx.obj["verbose"] = verbose
     setup_logging(verbose)
 
-    # Initialize APKPatcher home directory
-    home = get_apkpatcher_home()
+
+    home = get_apkpatchx_home()
     home.mkdir(parents=True, exist_ok=True)
 
     if verbose:
-        print_info(f"APKPatcher home: {home}")
+        print_info(f"APKPatchx home: {home}")
 
 
 @cli.command()
@@ -88,7 +86,7 @@ def pull(ctx: click.Context, package_name: str, net: bool) -> None:
         else:
             print_success(f"Pulled APK to: {apk_paths[0]}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -117,7 +115,7 @@ def decode(ctx: click.Context, apk_file: Path, no_res: bool, no_src: bool,
         )
         print_success(f"Decoded to: {output_dir}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -151,7 +149,7 @@ def build(ctx: click.Context, apk_dir: Path, output: Optional[Path],
         signed_path = signing_service.sign_apk(apk_path)
         print_success(f"Built and signed: {signed_path}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -192,7 +190,7 @@ def patch(ctx: click.Context, apk_file: Path, arch: str, gadget_conf: Optional[P
         )
         print_success(f"Patched APK: {output_path}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -214,11 +212,9 @@ def rename(ctx: click.Context, apk_file: Path, new_package: str, net: bool) -> N
 
         decoded_dir = apktool_service.decode(apk_file, no_resources=False, no_sources=True)
 
-        # Update apktool.yml with new package name
         apktool_yml = decoded_dir / "apktool.yml"
         content = apktool_yml.read_text()
 
-        # Add or update renameManifestPackage
         if "renameManifestPackage:" in content:
             import re
             content = re.sub(r"renameManifestPackage:.*", f"renameManifestPackage: {new_package}", content)
@@ -227,14 +223,14 @@ def rename(ctx: click.Context, apk_file: Path, new_package: str, net: bool) -> N
 
         apktool_yml.write_text(content)
 
-        # Build and sign
+
         output_path = apk_file.parent / f"{apk_file.stem}.renamed.apk"
         built_path = apktool_service.build(decoded_dir, output_path, add_network_config=net)
         signed_path = signing_service.sign_apk(built_path)
 
         print_success(f"Renamed APK: {signed_path}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -252,7 +248,7 @@ def sign(ctx: click.Context, apk_file: Path) -> None:
         signed_path = signing_service.sign_apk(apk_file)
         print_success(f"Signed APK: {signed_path}")
 
-    except APKPatcherError as e:
+    except APKPatchxError as e:
         print_error(str(e))
         sys.exit(1)
 
@@ -271,3 +267,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

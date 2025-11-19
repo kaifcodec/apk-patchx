@@ -5,10 +5,10 @@ __author__ = "kaifcodec"
 __email__ = "kaifcodec@gmail.com"
 __license__ = "MIT"
 
-from .exceptions import APKPatcherError, ToolNotFoundError, ValidationError
+from .exceptions import APKPatchxError, ToolNotFoundError, ValidationError
 
 __all__ = [
-    "APKPatcherError",
+    "APKPatchxError",
     "ToolNotFoundError", 
     "ValidationError"
 ]
