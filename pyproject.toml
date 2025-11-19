@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "apk-patchx"
-version = "19.11.2025.0"
+version = "20.11.2025.0"
 description = "Android APK manipulation toolkit with Frida gadget injection support"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -44,7 +44,7 @@ Repository = "https://github.com/kaifcodec/apk-patchx.git"
 Issues = "https://github.com/kaifcodec/apk-patchx/issues"
 
 [project.scripts]
-apk-patchx = "apk_patchx:main"
+apk-patchx = "apk_patchx.__main__:main"
 
 [tool.flit.sdist]
 exclude = ["tests/", "docs/", ".github/", ".git", "rm_pycache", "che.py", ".gitignore"]
