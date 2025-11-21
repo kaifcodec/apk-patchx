@@ -34,10 +34,8 @@ class FridaService:
         if arch not in self.ARCH_MAPPING:
             raise ValidationError(f"Unsupported architecture: {arch}")
 
-        # Get Frida gadget
         gadget_path = self._ensure_frida_gadget(arch, frida_version)
 
-        # Decode APK
         decode_dir = self.apktool_service.decode(
             apk_path,
             no_resources=False,
@@ -46,7 +44,7 @@ class FridaService:
             extra_args=decode_args
         )
 
-        # Inject gadget
+
         self._inject_gadget(decode_dir, arch, gadget_path, gadget_config, no_sources)
 
         # Update manifest
@@ -61,7 +59,6 @@ class FridaService:
             extra_args=build_args
         )
 
-        # Sign APK
         signed_path = self.signing_service.sign_apk(built_path)
 
         return signed_path
@@ -81,11 +78,9 @@ class FridaService:
         gadget_path = tools_dir / gadget_name
         gadget_xz_path = tools_dir / gadget_xz_name
 
-        # Check if already downloaded and extracted
         if gadget_path.exists():
             return gadget_path
 
-        # Download if needed
         if not gadget_xz_path.exists():
             if self.verbose:
                 print(f"Downloading Frida gadget {version} for {arch}...")
@@ -93,7 +88,7 @@ class FridaService:
             gadget_url = f"https://github.com/frida/frida/releases/download/{version}/{gadget_xz_name}"
             download_file(gadget_url, gadget_xz_path)
 
-        # Extract XZ file
+
         if self.verbose:
             print(f"Extracting {gadget_xz_name}...")
 
@@ -103,7 +98,6 @@ class FridaService:
                 with open(gadget_path, 'wb') as out_file:
                     out_file.write(xz_file.read())
         except ImportError:
-            # Fallback to system unxz
             cmd = ["unxz", str(gadget_xz_path)]
             result = run_command(cmd)
             if result.returncode != 0:
@@ -116,14 +110,13 @@ class FridaService:
         """Inject Frida gadget into decoded APK."""
         abi_name, _ = self.ARCH_MAPPING[arch]
 
-        # Create lib directory and copy gadget
         lib_dir = decode_dir / "lib" / abi_name
         lib_dir.mkdir(parents=True, exist_ok=True)
 
         import shutil
         shutil.copy2(gadget_path, lib_dir / "libfrida-gadget.so")
 
-        # Copy gadget config if provided
+        # copy gadget config if provided
         if gadget_config:
             shutil.copy2(gadget_config, lib_dir / "libfrida-gadget.config.so")
 
@@ -131,19 +124,18 @@ class FridaService:
             # Inject loadLibrary call into smali
             self._inject_load_library_smali(decode_dir)
         else:
-            # Use dexpatch for direct DEX patching
             self._inject_load_library_dex(decode_dir)
 
     def _inject_load_library_smali(self, decode_dir: Path) -> None:
         """Inject System.loadLibrary call into smali code."""
         from .android_sdk import AndroidSDKService
 
-        # Find main activity
+        # find main activity
         main_activity = self._find_main_activity(decode_dir)
         if not main_activity:
             raise FridaPatchError("Could not find main activity for injection")
 
-        # Convert activity name to smali path
+        # convert activity name to smali path
         smali_path = self._find_smali_class(decode_dir, main_activity)
         if not smali_path:
             raise FridaPatchError(f"Could not find smali file for {main_activity}")
@@ -151,10 +143,10 @@ class FridaService:
         if self.verbose:
             print(f"Injecting into {smali_path}")
 
-        # Read smali file
+        # read smali file
         lines = smali_path.read_text().splitlines()
 
-        # Find or create static constructor
+        # find or create static constructor
         injected = False
         new_lines = []
         i = 0
@@ -163,15 +155,15 @@ class FridaService:
             line = lines[i]
             new_lines.append(line)
 
-            # Look for existing static constructor
+            # look for existing static constructor
             if line.strip().startswith(".method static constructor"):
-                # Found static constructor, inject after .locals
+                # found static constructor, inject after .locals
                 i += 1
                 while i < len(lines) and not lines[i].strip().startswith(".locals"):
                     new_lines.append(lines[i])
                     i += 1
 
-                if i < len(lines):  # Found .locals
+                if i < len(lines):
                     locals_line = lines[i]
                     new_lines.append(locals_line)
 
@@ -192,8 +184,6 @@ class FridaService:
             i += 1
 
         if not injected:
-            # No static constructor found, create one
-            # Insert before the first method or at the end of the class
             insert_index = -1
             for i, line in enumerate(new_lines):
                 if line.strip().startswith(".method") and not line.strip().startswith(".method static constructor"):
@@ -201,7 +191,7 @@ class FridaService:
                     break
 
             if insert_index == -1:
-                # Insert before .end class
+
                 for i in range(len(new_lines) - 1, -1, -1):
                     if new_lines[i].strip() == ".end class":
                         insert_index = i
@@ -228,7 +218,7 @@ class FridaService:
 
     def _inject_load_library_dex(self, decode_dir: Path) -> None:
         """Inject using dexpatch for direct DEX manipulation."""
-        # This would use dexpatch.jar - simplified implementation
+
         if self.verbose:
             print("DEX patching not fully implemented - falling back to smali injection")
 
@@ -241,12 +231,9 @@ class FridaService:
         sdk_service = AndroidSDKService(verbose=self.verbose)
         aapt = sdk_service.get_tool_path("aapt")
 
-        # Find original APK to analyze
         apktool_yml = decode_dir / "apktool.yml"
         if not apktool_yml.exists():
             return None
-
-        # For now, parse AndroidManifest.xml directly
         manifest_path = decode_dir / "AndroidManifest.xml"
         if not manifest_path.exists():
             return None
@@ -263,7 +250,7 @@ class FridaService:
             if match:
                 activity_name = match.group(1)
                 if activity_name.startswith("."):
-                    # Get package name
+
                     pkg_match = re.search(r'package="([^"]*)"', manifest_content)
                     if pkg_match:
                         package_name = pkg_match.group(1)
@@ -284,7 +271,6 @@ class FridaService:
         if smali_file.exists():
             return smali_file
 
-        # Check in smali_classes directories (multidex)
         for smali_dir in decode_dir.glob("smali_classes*"):
             smali_file = smali_dir / class_path
             if smali_file.exists():
@@ -300,12 +286,11 @@ class FridaService:
         if not manifest_path.exists():
             return
 
-        # Add INTERNET permission
+        # add INTERNET permission
         ManifestUtils.add_internet_permission(manifest_path)
 
-        # Set extractNativeLibs to true
         ManifestUtils.set_extract_native_libs(manifest_path, True)
 
-        # Add network security config if requested
+
         if add_network_config:
             ManifestUtils.add_network_security_config(manifest_path)

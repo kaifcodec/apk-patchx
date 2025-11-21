@@ -54,13 +54,13 @@ class SigningService:
         if output_path is None:
             output_path = apk_path.parent / f"{apk_path.stem}_signed.apk"
 
-        # First align the APK
+
         aligned_path = self._zipalign_apk(apk_path)
 
-        # Then sign it
+
         signed_path = self._apksigner_sign(aligned_path, output_path)
 
-        # Clean up aligned file if it's temporary
+
         if aligned_path != apk_path:
             aligned_path.unlink(missing_ok=True)
 

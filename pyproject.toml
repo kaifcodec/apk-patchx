@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "apk-patchx"
-version = "20.11.2025.0"
+version = "21.11.2025.0"
 description = "Android APK manipulation toolkit with Frida gadget injection support"
 readme = "README.md"
 license = {file = "LICENSE"}

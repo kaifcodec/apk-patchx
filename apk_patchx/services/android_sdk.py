@@ -38,7 +38,6 @@ class AndroidSDKService:
 
         self.cmdline_tools_dir.mkdir(parents=True, exist_ok=True)
 
-        # Download command line tools
         tools_url = "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip"
         zip_path = get_apkpatchx_home() / "tools" / "commandlinetools.zip"
 
@@ -47,7 +46,7 @@ class AndroidSDKService:
 
         download_file(tools_url, zip_path)
 
-        # Extract
+
         import zipfile
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(get_apkpatchx_home() / "tools")

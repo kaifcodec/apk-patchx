@@ -30,12 +30,11 @@ class ApktoolService:
         tools_dir = get_apkpatchx_home() / "tools"
         tools_dir.mkdir(parents=True, exist_ok=True)
 
-        # Check for existing apktool
         for jar_file in tools_dir.glob("apktool_*.jar"):
             self._apktool_path = jar_file
             return
 
-        # Download latest apktool
+
         if self.verbose:
             print("Downloading latest apktool...")
 
@@ -98,7 +97,7 @@ class ApktoolService:
 
         self.sdk_service.ensure_java()
 
-        # Add network security config if requested
+
         if add_network_config:
             self._add_network_security_config(source_dir)
 
@@ -122,7 +121,7 @@ class ApktoolService:
         """Add permissive network security configuration."""
         from ..utils.manifest import ManifestUtils
 
-        # Create network security config XML
+
         xml_dir = source_dir / "res" / "xml"
         xml_dir.mkdir(parents=True, exist_ok=True)
 
@@ -144,7 +143,7 @@ class ApktoolService:
 </network-security-config>
 """)
 
-        # Update AndroidManifest.xml
         manifest_path = source_dir / "AndroidManifest.xml"
         if manifest_path.exists():
             ManifestUtils.add_network_security_config(manifest_path)
+

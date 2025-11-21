@@ -33,7 +33,7 @@ class DexPatcher:
             self._dexpatch_path = dexpatch_path
             return
 
-        # Download dexpatch
+
         if self.verbose:
             print("Downloading dexpatch...")
 
@@ -80,13 +80,13 @@ class DexPatcher:
 
     def find_dex_with_class(self, decode_dir: Path, class_name: str) -> Optional[Path]:
         """Find DEX file containing the specified class."""
-        # Convert class name to internal format
+
         internal_name = class_name.replace(".", "/")
 
-        # Search in classes*.dex files
+
         for dex_file in decode_dir.glob("classes*.dex"):
             try:
-                # Use strings command to search for class in DEX
+
                 result = subprocess.run(
                     ["strings", str(dex_file)],
                     capture_output=True, text=True, check=False
@@ -115,5 +115,5 @@ class DexPatcher:
                     library_name in result.stdout and
                     "loadLibrary" in result.stdout)
         except FileNotFoundError:
-            # If strings is not available, assume not patched
+
             return False
