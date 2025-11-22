@@ -66,8 +66,10 @@ def cli(ctx: click.Context, verbose: bool, version: bool) -> None:
 @cli.command()
 @click.argument("package_name")
 @click.option("--net", is_flag=True, help="Add permissive network security config")
+@click.option("--apktool-decode-args", help="Additional apktool decode arguments")
+@click.option("--apktool-build-args", help="Additional apktool build arguments")
 @click.pass_context
-def pull(ctx: click.Context, package_name: str, net: bool) -> None:
+def pull(ctx: click.Context, package_name: str, net: bool, apktool_decode_args: Optional[str], apktool_build_args: Optional[str]) -> None:
     """Pull APK from connected device."""
     try:
         verbose = ctx.obj.get("verbose", False)

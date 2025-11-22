@@ -2,7 +2,6 @@
 
 from pathlib import Path
 from typing import List
-
 from ..exceptions import BuildError, ValidationError
 from .apktool import ApktoolService
 from .signing import SigningService
@@ -16,7 +15,7 @@ class SplitMergeService:
         self.apktool_service = ApktoolService(verbose=verbose)
         self.signing_service = SigningService(verbose=verbose)
 
-    def merge_split_apks(self, apk_paths: List[Path], net: bool = False) -> Path:
+    def merge_split_apks(self, apk_paths: List[Path], net: bool = False, decode_args: str = None, build_args: str = None) -> Path:
         """Merge multiple split APKs into a single APK."""
         if not apk_paths:
             raise ValidationError("No APK paths provided")
@@ -38,15 +37,19 @@ class SplitMergeService:
 
         if self.verbose:
             print(f"Merging {len(apk_paths)} split APKs...")
-        base_dir = self.apktool_service.decode(base_apk, no_resources=False, no_sources=True)
+        base_dir = self.apktool_service.decode(base_apk, no_resources=False, no_sources=True, extra_args=decode_args)
 
         split_dirs = []
+        if not decode_args:
+           combined_decode_args = "-resm dummy"
+        else:
+           combined_decode_args = f"-resm dummy {decode_args}"
         for split_apk in split_apks:
             split_dir = self.apktool_service.decode(
                 split_apk,
                 no_resources=False,
                 no_sources=True,
-                extra_args="--resource-mode dummy"
+                extra_args=combined_decode_args
             )
             split_dirs.append(split_dir)
 
@@ -56,7 +59,7 @@ class SplitMergeService:
         self._disable_apk_splitting(base_dir)
         output_path = base_apk.parent / "merged.apk"
 
-        built_path = self.apktool_service.build(base_dir, output_path, add_network_config=net)
+        built_path = self.apktool_service.build(base_dir, output_path, add_network_config=net, extra_args = build_args)
 
         signed_path = self.signing_service.sign_apk(built_path)
 
