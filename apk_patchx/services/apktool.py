@@ -1,5 +1,3 @@
-"""Apktool service for APK operations."""
-
 import subprocess
 from pathlib import Path
 from typing import List, Optional
@@ -11,7 +9,6 @@ from .android_sdk import AndroidSDKService
 
 
 class ApktoolService:
-    """Service for apktool operations."""
 
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -20,13 +17,11 @@ class ApktoolService:
 
     @property
     def apktool_path(self) -> Path:
-        """Get apktool JAR path."""
         if self._apktool_path is None:
             self._ensure_apktool()
         return self._apktool_path
 
     def _ensure_apktool(self) -> None:
-        """Ensure apktool is available."""
         tools_dir = get_apkpatchx_home() / "tools"
         tools_dir.mkdir(parents=True, exist_ok=True)
 
@@ -57,7 +52,6 @@ class ApktoolService:
     def decode(self, apk_path: Path, output_dir: Optional[Path] = None,
               no_resources: bool = False, no_sources: bool = False,
               only_main_classes: bool = False, extra_args: Optional[str] = None) -> Path:
-        """Decode APK file."""
         if not apk_path.exists():
             raise ValidationError(f"APK file not found: {apk_path}")
 
@@ -91,7 +85,6 @@ class ApktoolService:
 
     def build(self, source_dir: Path, output_path: Path,
              add_network_config: bool = False, extra_args: Optional[str] = None) -> Path:
-        """Build APK from source directory."""
         if not source_dir.exists():
             raise ValidationError(f"Source directory not found: {source_dir}")
 
@@ -118,7 +111,6 @@ class ApktoolService:
         return output_path
 
     def _add_network_security_config(self, source_dir: Path) -> None:
-        """Add permissive network security configuration."""
         from ..utils.manifest import ManifestUtils
 
 
@@ -146,4 +138,5 @@ class ApktoolService:
         manifest_path = source_dir / "AndroidManifest.xml"
         if manifest_path.exists():
             ManifestUtils.add_network_security_config(manifest_path)
+
 

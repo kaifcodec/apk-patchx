@@ -1,5 +1,3 @@
-"""ADB service for device operations."""
-
 import re
 import subprocess
 from pathlib import Path
@@ -20,7 +18,6 @@ class ADBService:
 
     @property
     def adb_path(self) -> Path:
-        """Get ADB executable path."""
         if self._adb_path is None:
 
             result = subprocess.run(["which", "adb"], capture_output=True, text=True)
@@ -38,7 +35,6 @@ class ADBService:
         return self._adb_path
 
     def pull_package(self, package_name: str) -> List[Path]:
-        """Pull APK(s) for given package name."""
 
         cmd = [str(self.adb_path), "shell", "pm", "path", package_name]
         result = run_command(cmd, capture_output=True, text=True)
@@ -84,7 +80,6 @@ class ADBService:
         return pulled_apks
 
     def is_device_connected(self) -> bool:
-        """Check if device is connected."""
         try:
             cmd = [str(self.adb_path), "devices"]
             result = run_command(cmd, capture_output=True, text=True)

@@ -1,4 +1,3 @@
-"""Android SDK management service."""
 import os
 import subprocess
 from pathlib import Path
@@ -18,7 +17,6 @@ class AndroidSDKService:
         self.cmdline_tools_dir = get_apkpatchx_home() / "tools" / "cmdline-tools"
 
     def ensure_java(self) -> None:
-        """Ensure Java is available."""
         try:
             result = subprocess.run(["java", "-version"],
                                   capture_output=True, text=True, check=False)
@@ -32,7 +30,6 @@ class AndroidSDKService:
             )
 
     def ensure_cmdline_tools(self) -> None:
-        """Ensure Android command line tools are installed."""
         if (self.cmdline_tools_dir / "bin" / "sdkmanager").exists():
             return
 
@@ -62,7 +59,6 @@ class AndroidSDKService:
             print("Android command line tools installed")
 
     def ensure_build_tools(self, version: str = "33.0.1") -> None:
-        """Ensure Android build tools are installed."""
         build_tools_dir = self.sdk_root / "build-tools" / version
         if build_tools_dir.exists():
             return
@@ -98,7 +94,6 @@ class AndroidSDKService:
             print(f"Build-tools {version} installed")
 
     def ensure_platform_tools(self) -> None:
-        """Ensure Android platform tools are installed."""
         platform_tools_dir = self.sdk_root / "platform-tools"
         if platform_tools_dir.exists():
             return
@@ -134,7 +129,6 @@ class AndroidSDKService:
             print("Platform-tools installed")
 
     def get_tool_path(self, tool: str) -> Path:
-        """Get path to SDK tool."""
         if tool in ["aapt", "aapt2", "zipalign", "apksigner"]:
             self.ensure_build_tools()
             return self.sdk_root / "build-tools" / "33.0.1" / tool
@@ -143,3 +137,4 @@ class AndroidSDKService:
             return self.sdk_root / "platform-tools" / tool
         else:
             raise ValueError(f"Unknown tool: {tool}")
+

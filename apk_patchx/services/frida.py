@@ -1,5 +1,3 @@
-"""Frida gadget injection service."""
-
 import re
 from pathlib import Path
 from typing import Optional, Dict
@@ -12,7 +10,6 @@ from .signing import SigningService
 
 
 class FridaService:
-    """Service for Frida gadget operations."""
 
     ARCH_MAPPING = {
         "arm": ("armeabi-v7a", "android-arm"),
@@ -30,7 +27,6 @@ class FridaService:
                  add_network_config: bool = False, no_sources: bool = False,
                  only_main_classes: bool = False, frida_version: Optional[str] = None,
                  decode_args: Optional[str] = None, build_args: Optional[str] = None) -> Path:
-        """Patch APK with Frida gadget."""
         if arch not in self.ARCH_MAPPING:
             raise ValidationError(f"Unsupported architecture: {arch}")
 
@@ -64,7 +60,6 @@ class FridaService:
         return signed_path
 
     def _ensure_frida_gadget(self, arch: str, version: Optional[str] = None) -> Path:
-        """Ensure Frida gadget is available for architecture."""
         if version is None:
             version = get_latest_github_release("frida", "frida")
 
@@ -116,7 +111,6 @@ class FridaService:
         import shutil
         shutil.copy2(gadget_path, lib_dir / "libfrida-gadget.so")
 
-        # copy gadget config if provided
         if gadget_config:
             shutil.copy2(gadget_config, lib_dir / "libfrida-gadget.config.so")
 
@@ -213,11 +207,10 @@ class FridaService:
 
                 new_lines[insert_index:insert_index] = constructor_lines
 
-        # Write back to file
+        # write back to file
         smali_path.write_text("\n".join(new_lines))
 
     def _inject_load_library_dex(self, decode_dir: Path) -> None:
-        """Inject using dexpatch for direct DEX manipulation."""
 
         if self.verbose:
             print("DEX patching not fully implemented - falling back to smali injection")
@@ -225,7 +218,6 @@ class FridaService:
         self._inject_load_library_smali(decode_dir)
 
     def _find_main_activity(self, decode_dir: Path) -> Optional[str]:
-        """Find the main activity class name."""
         from .android_sdk import AndroidSDKService
 
         sdk_service = AndroidSDKService(verbose=self.verbose)
@@ -239,10 +231,10 @@ class FridaService:
             return None
 
         try:
-            # Simple XML parsing to find main activity
+            # XML parsing to find main activity
             manifest_content = manifest_path.read_text()
 
-            # Look for activity with MAIN action and LAUNCHER category
+            # look for activity with MAIN action and LAUNCHER category
             import re
             pattern = r'<activity[^>]*android:name="([^"]*)"[^>]*>.*?<action android:name="android\.intent\.action\.MAIN".*?<category android:name="android\.intent\.category\.LAUNCHER"'
             match = re.search(pattern, manifest_content, re.DOTALL)
@@ -263,10 +255,10 @@ class FridaService:
 
     def _find_smali_class(self, decode_dir: Path, class_name: str) -> Optional[Path]:
         """Find smali file for given class name."""
-        # Convert class name to path
+        # convert class name to path
         class_path = class_name.replace(".", "/") + ".smali"
 
-        # Check in main smali directory
+        # check in main smali directory
         smali_file = decode_dir / "smali" / class_path
         if smali_file.exists():
             return smali_file
